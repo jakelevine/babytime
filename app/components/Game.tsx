@@ -66,7 +66,6 @@ const initialGameState: GameState = {
   timeElapsed: 0,
   cycleTime: CYCLE_LENGTH,
   parentSleepTime: 0,
-  targetSleepTime: TARGET_SLEEP_TIME,
   isParentSleeping: false,
   kids: initialKids,
 };
@@ -77,7 +76,7 @@ export default function Game() {
   const [activeKidIndex, setActiveKidIndex] = useState<number | null>(null);
   const [activeActivityIndex, setActiveActivityIndex] = useState<number | null>(null);
   const [parentPosition, setParentPosition] = useState('parentRoom');
-  const [gameResult, setGameResult] = useState<'win' | 'lose' | null>(null);
+  const [gameResult, setGameResult] = useState<'complete' | null>(null);
 
   useEffect(() => {
     if (!isGameRunning) return;
@@ -152,12 +151,7 @@ export default function Game() {
         // Check if cycle is complete
         if (newState.timeElapsed >= newState.cycleTime) {
           setIsGameRunning(false);
-          // Determine if player won or lost
-          if (newState.parentSleepTime >= newState.targetSleepTime) {
-            setGameResult('win');
-          } else {
-            setGameResult('lose');
-          }
+          setGameResult('complete');
         }
 
         return newState;
@@ -215,11 +209,45 @@ export default function Game() {
 
   const handleRestart = () => {
     setGameState(initialGameState);
-    setIsGameRunning(false);
+    setIsGameRunning(true);
     setActiveKidIndex(null);
     setActiveActivityIndex(null);
     setParentPosition('parentRoom');
     setGameResult(null);
+  };
+
+  const getSleepQualityMessage = (sleepTime: number) => {
+    if (sleepTime < 3) {
+      return {
+        message: "Not great, you're about to have a shitty day",
+        gradient: "from-red-500 to-red-600",
+        emoji: "☠️"
+      };
+    } else if (sleepTime < 6) {
+      return {
+        message: "Maybe only one person will say 'you look tired'",
+        gradient: "from-orange-400 to-orange-500",
+        emoji: "😫"
+      };
+    } else if (sleepTime < 10) {
+      return {
+        message: "Wow, you just might make it with a few cups of coffee",
+        gradient: "from-yellow-400 to-yellow-500",
+        emoji: "☕"
+      };
+    } else if (sleepTime < 15) {
+      return {
+        message: "Look at you, practically a functional human being!",
+        gradient: "from-green-400 to-green-500",
+        emoji: "🌟"
+      };
+    } else {
+      return {
+        message: "What sorcery is this? Are you even a parent?",
+        gradient: "from-purple-400 to-purple-500",
+        emoji: "🧙‍♂️"
+      };
+    }
   };
 
   return (
@@ -256,39 +284,48 @@ export default function Game() {
               animate={{ scale: 1, rotate: 0 }}
               transition={{ type: "spring", damping: 12 }}
             >
-              <motion.h2
-                className={`text-4xl font-bold pixel-art ${
-                  gameResult === 'win'
-                    ? 'bg-gradient-to-r from-green-400 to-emerald-500'
-                    : 'bg-gradient-to-r from-red-400 to-rose-500'
-                } text-transparent bg-clip-text`}
-                initial={{ y: -20 }}
-                animate={{ y: 0 }}
-                transition={{ delay: 0.3 }}
-              >
-                {gameResult === 'win' ? 'YOU WIN! 🎉' : 'GAME OVER 😴'}
-              </motion.h2>
-              <motion.p
-                className="text-gray-300 text-lg"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.6 }}
-              >
-                {gameResult === 'win'
-                  ? `Congratulations! You got ${Math.floor(gameState.parentSleepTime)} seconds of sleep!`
-                  : `You only got ${Math.floor(gameState.parentSleepTime)} seconds of sleep...`}
-              </motion.p>
-              <motion.button
-                className="px-6 py-3 bg-blue-500 rounded-lg font-bold hover:bg-blue-600 transition-colors retro-border"
-                onClick={handleRestart}
-                initial={{ y: 20 }}
-                animate={{ y: 0 }}
-                transition={{ delay: 0.9 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Try Again
-              </motion.button>
+              {(() => {
+                const quality = getSleepQualityMessage(Math.floor(gameState.parentSleepTime));
+                return (
+                  <>
+                    <motion.div
+                      className="text-6xl mb-4"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: "spring", delay: 0.2 }}
+                    >
+                      {quality.emoji}
+                    </motion.div>
+                    <motion.h2
+                      className={`text-3xl font-bold pixel-art bg-gradient-to-r ${quality.gradient} text-transparent bg-clip-text`}
+                      initial={{ y: -20 }}
+                      animate={{ y: 0 }}
+                      transition={{ delay: 0.3 }}
+                    >
+                      {Math.floor(gameState.parentSleepTime)} seconds of sleep
+                    </motion.h2>
+                    <motion.p
+                      className="text-gray-300 text-lg"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.6 }}
+                    >
+                      {quality.message}
+                    </motion.p>
+                    <motion.button
+                      className="px-6 py-3 bg-blue-500 rounded-lg font-bold hover:bg-blue-600 transition-colors retro-border"
+                      onClick={handleRestart}
+                      initial={{ y: 20 }}
+                      animate={{ y: 0 }}
+                      transition={{ delay: 0.9 }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      Try Again
+                    </motion.button>
+                  </>
+                );
+              })()}
             </motion.div>
           </motion.div>
         )}
@@ -297,19 +334,16 @@ export default function Game() {
         <div className="bg-gray-900 p-4 rounded-lg retro-shadow">
           <div className="flex justify-between items-center">
             <div className="space-y-2 flex-1 mr-3">
-              <div className="text-sm font-bold mb-1">
-                Parent Sleep Goal: {gameState.targetSleepTime} seconds
-              </div>
               <div className="w-full bg-gray-800 rounded-full h-4 retro-border overflow-hidden">
                 <div
                   className="bg-purple-500 h-full transition-all duration-300"
                   style={{
-                    width: `${(gameState.parentSleepTime / gameState.targetSleepTime) * 100}%`,
+                    width: `${(gameState.parentSleepTime / CYCLE_LENGTH) * 100}%`,
                   }}
                 />
               </div>
-              <p className="text-xs font-bold">
-                Current Sleep: {Math.floor(gameState.parentSleepTime)} seconds
+              <p className="text-sm font-bold">
+                Sleep: {Math.floor(gameState.parentSleepTime)} seconds
               </p>
             </div>
             <div
