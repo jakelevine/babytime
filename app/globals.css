@@ -1,0 +1,68 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 255, 255, 255;
+  --background-rgb: 0, 0, 0;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+}
+
+/* Retro pixel art styles */
+.pixel-art {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.retro-shadow {
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.2);
+}
+
+.retro-border {
+  border: 4px solid;
+  border-color: #ffffff #808080 #808080 #ffffff;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+  100% { transform: translateY(0px); }
+}
+
+.float {
+  animation: float 2s ease-in-out infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.blink {
+  animation: blink 1s steps(1) infinite;
+}
+
+@keyframes walk {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(2px) translateY(-2px); }
+  50% { transform: translateX(0); }
+  75% { transform: translateX(-2px) translateY(-2px); }
+  100% { transform: translateX(0); }
+}
+
+.walk {
+  animation: walk 0.5s steps(4) infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.7); }
+}
+
+.animate-twinkle {
+  animation: twinkle 2s ease-in-out infinite;
+} 
