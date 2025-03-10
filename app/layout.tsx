@@ -2,7 +2,7 @@ import React from 'react';
 import './globals.css';
 
 export const metadata = {
-  title: 'Baby Sleep Game',
+  title: 'Sleep Regression',
   description: 'A game about managing sleeping babies',
 }
 
