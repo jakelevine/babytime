@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { GameState, Kid, KidActivity, ACTIVITY_DURATIONS, CYCLE_LENGTH, TARGET_SLEEP_TIME } from '../types/game';
+import { GameState, Kid, KidActivity, ACTIVITY_DURATIONS, CYCLE_LENGTH } from '../types/game';
 import RetroHouse from './RetroHouse';
 
 const initialKids: Kid[] = [

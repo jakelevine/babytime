@@ -5,7 +5,6 @@ export const ACTIVITY_DURATIONS = {
 } as const;
 
 export const CYCLE_LENGTH = 30; // Total game cycle is 30 seconds (0.5 minute)
-export const TARGET_SLEEP_TIME = 20; // Target sleep time is 20 seconds
 
 export type KidActivity = {
   name: string;
@@ -25,7 +24,6 @@ export type GameState = {
   timeElapsed: number;
   cycleTime: number;
   parentSleepTime: number;
-  targetSleepTime: number;
   isParentSleeping: boolean;
   kids: Kid[];
 }; 
