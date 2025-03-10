@@ -541,7 +541,7 @@ const RetroHouse: React.FC<RetroHouseProps> = ({
     },
     parentRoom: {
       name: "Parent",
-      position: { x: '28%', y: 290 },
+      position: { x: '28%', y: 320 },
       style: {
         wallColor: '#f3e5f5',
         floorColor: '#ffe0b2',
@@ -554,7 +554,7 @@ const RetroHouse: React.FC<RetroHouseProps> = ({
   };
 
   return (
-    <div className="relative w-full aspect-[390/450]">
+    <div className="relative w-full aspect-[390/500]">
       {/* Night sky background */}
       <div className="absolute inset-0 bg-gradient-to-b from-gray-900 to-black rounded-lg overflow-hidden">
         {/* Moon */}
