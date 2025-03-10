@@ -6,7 +6,7 @@ import { Kid, KidActivity } from '../types/game';
 
 type RetroRoomProps = {
   name: string;
-  position: { x: number; y: number };
+  position: { x: string | number; y: number };
   kid?: Kid;
   isParentHere: boolean;
   activeActivity?: KidActivity;
@@ -35,7 +35,8 @@ const RetroRoom: React.FC<RetroRoomProps> = ({
 }) => {
   const roomStyles: React.CSSProperties = {
     position: 'absolute',
-    width: '150px',
+    width: '40%',
+    maxWidth: '150px',
     height: '112px',
     left: position.x,
     top: position.y,
@@ -516,7 +517,7 @@ const RetroHouse: React.FC<RetroHouseProps> = ({
   const rooms = {
     babyRoom: {
       name: "Baby",
-      position: { x: 20, y: 160 },
+      position: { x: '5%', y: 160 },
       style: {
         wallColor: '#ffebee',
         floorColor: '#ffe0b2',
@@ -528,7 +529,7 @@ const RetroHouse: React.FC<RetroHouseProps> = ({
     },
     toddlerRoom: {
       name: "Toddler",
-      position: { x: 200, y: 160 },
+      position: { x: '52%', y: 160 },
       style: {
         wallColor: '#e3f2fd',
         floorColor: '#ffe0b2',
@@ -540,7 +541,7 @@ const RetroHouse: React.FC<RetroHouseProps> = ({
     },
     parentRoom: {
       name: "Parent",
-      position: { x: 110, y: 290 },
+      position: { x: '28%', y: 290 },
       style: {
         wallColor: '#f3e5f5',
         floorColor: '#ffe0b2',

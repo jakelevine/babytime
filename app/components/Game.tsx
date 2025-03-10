@@ -14,21 +14,21 @@ const initialKids: Kid[] = [
         name: 'Soothe',
         duration: ACTIVITY_DURATIONS.SHORT,
         isInProgress: false,
-        cooldown: 60,
+        cooldown: 15,
         lastCompletedAt: null,
       },
       {
         name: 'Change Diaper',
         duration: ACTIVITY_DURATIONS.MEDIUM,
         isInProgress: false,
-        cooldown: 120,
+        cooldown: 30,
         lastCompletedAt: null,
       },
       {
         name: 'Give Bottle',
         duration: ACTIVITY_DURATIONS.LONG,
         isInProgress: false,
-        cooldown: 180,
+        cooldown: 45,
         lastCompletedAt: null,
       },
     ],
@@ -41,21 +41,21 @@ const initialKids: Kid[] = [
         name: 'Fix Blanket',
         duration: ACTIVITY_DURATIONS.SHORT,
         isInProgress: false,
-        cooldown: 90,
+        cooldown: 20,
         lastCompletedAt: null,
       },
       {
         name: 'Potty Break',
         duration: ACTIVITY_DURATIONS.MEDIUM,
         isInProgress: false,
-        cooldown: 150,
+        cooldown: 35,
         lastCompletedAt: null,
       },
       {
         name: 'Handle Night Terror',
         duration: ACTIVITY_DURATIONS.LONG,
         isInProgress: false,
-        cooldown: 300,
+        cooldown: 50,
         lastCompletedAt: null,
       },
     ],
@@ -93,7 +93,14 @@ export default function Game() {
 
           // Handle wake-up events
           if (newKid.isAsleep && Math.random() < 0.15) { // 15% chance per second to wake up
-            newKid.isAsleep = false;
+            // Only wake up if at least one activity is available
+            const hasAvailableActivity = newKid.activities.some(activity => 
+              !activity.isInProgress && (!activity.lastCompletedAt || newState.timeElapsed - activity.lastCompletedAt >= activity.cooldown)
+            );
+            
+            if (hasAvailableActivity) {
+              newKid.isAsleep = false;
+            }
           }
 
           // Handle activity completion
@@ -140,10 +147,6 @@ export default function Game() {
           newState.parentSleepTime += 1;
         } else {
           newState.isParentSleeping = false;
-          // Lose sleep if both kids are awake!
-          if (awakeKidsCount === 2) {
-            newState.parentSleepTime = Math.max(0, newState.parentSleepTime - 1);
-          }
         }
 
         // Check if cycle is complete
@@ -185,12 +188,17 @@ export default function Game() {
     // Only allow interaction if kid is awake
     if (kid.isAsleep) return;
 
-    const availableActivity = kid.activities.findIndex(
-      (activity) =>
-        !activity.isInProgress &&
-        (!activity.lastCompletedAt ||
-          gameState.timeElapsed - activity.lastCompletedAt >= activity.cooldown)
-    );
+    // Check each activity's status
+    const availableActivities = kid.activities.map((activity, index) => ({
+      index,
+      name: activity.name,
+      available: !activity.isInProgress && (!activity.lastCompletedAt || gameState.timeElapsed - activity.lastCompletedAt >= activity.cooldown),
+      cooldownRemaining: activity.lastCompletedAt ? Math.max(0, activity.cooldown - (gameState.timeElapsed - activity.lastCompletedAt)) : 0
+    }));
+
+    console.log('Available activities:', availableActivities);
+
+    const availableActivity = availableActivities.find(a => a.available)?.index ?? -1;
 
     if (availableActivity !== -1) {
       setGameState(prev => {
